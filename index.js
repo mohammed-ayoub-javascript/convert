@@ -8,6 +8,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const AdmZip = require('adm-zip');
 const unrar = require('unrar');
 const readline = require('readline');
+const { exec } = require('child_process');
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -108,16 +109,16 @@ function convertHtmlToPDF(inputPath, outputPath) {
 }
 
 function convertVideo(inputPath, outputPath, format) {
-    ffmpeg(inputPath)
-        .audioCodec('libmp3lame')
-        .toFormat(format)
-        .on('end', () => {
-            console.log(`Video converted to ${format} successfully.`);
-        })
-        .on('error', (err) => {
-            console.log("Error converting video:", err);
-        })
-        .save(outputPath);
+    const ffmpegPath = require('ffmpeg-static');
+    const command = `"${ffmpegPath}" -i "${inputPath}" -vn -acodec libmp3lame -ar 44100 -ac 2 -ab 192k "${outputPath}"`;
+
+    exec(command, (err, stdout, stderr) => {
+        if (err) {
+            console.error('Error converting video:', err);
+            return;
+        }
+        console.log('Video converted successfully:', stdout);
+    });
 }
 
 function extractZip(inputPath, outputPath) {
@@ -148,7 +149,6 @@ async function main() {
 
     const stats = fs.statSync(filePath);
     if (stats.isDirectory()) {
-       
         const files = fs.readdirSync(filePath);
         if (files.length > 1) {
             console.log("Multiple files found in the folder. Converting all files...");
