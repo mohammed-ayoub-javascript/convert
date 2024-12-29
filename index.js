@@ -148,7 +148,7 @@ async function main() {
 
     const stats = fs.statSync(filePath);
     if (stats.isDirectory()) {
-        // If it's a directory, list all files in the folder
+       
         const files = fs.readdirSync(filePath);
         if (files.length > 1) {
             console.log("Multiple files found in the folder. Converting all files...");
@@ -225,7 +225,7 @@ async function main() {
             convertFile(originalFormat, targetFormat, singleFile);
         }
     } else {
-        const originalFormat = getFileFormat(filePath); // Get the file format
+        const originalFormat = getFileFormat(filePath); 
         console.log(`Detected file format: ${originalFormat}`);
 
         const userChoice = await promptForConversionChoice();
